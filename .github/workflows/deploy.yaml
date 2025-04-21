@@ -23,5 +23,5 @@ jobs:
         with:
           subscriptionId: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
           resourceGroupName: Bicep-Assignment
-          template: ./main.bicep
+          template: ./Main.bicep
           parameters: ''
