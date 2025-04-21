@@ -1,8 +1,6 @@
-param location string
-
 resource vnet1 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: 'vnet1'
-  location: location
+  location: resourceGroup().location
   properties: {
     addressSpace: {
       addressPrefixes: ['10.0.0.0/16']
@@ -26,7 +24,7 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2022-07-01' = {
 
 resource vnet2 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: 'vnet2'
-  location: location
+  location: resourceGroup().location
   properties: {
     addressSpace: {
       addressPrefixes: ['10.1.0.0/16']
@@ -48,5 +46,27 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   }
 }
 
-output vnet1Id string = vnet1.id
-output vnet2Id string = vnet2.id
+resource peer1 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2022-07-01' = {
+  name: 'vnet1-to-vnet2'
+  parent: vnet1
+  properties: {
+    remoteVirtualNetwork: {
+      id: vnet2.id
+    }
+    allowVirtualNetworkAccess: true
+  }
+}
+
+resource peer2 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2022-07-01' = {
+  name: 'vnet2-to-vnet1'
+  parent: vnet2
+  properties: {
+    remoteVirtualNetwork: {
+      id: vnet1.id
+    }
+    allowVirtualNetworkAccess: true
+  }
+}
+
+output vnet1InfraSubnetId string = vnet1.properties.subnets[0].id
+output vnet2InfraSubnetId string = vnet2.properties.subnets[0].id

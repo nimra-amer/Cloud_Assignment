@@ -1,59 +1,40 @@
-param location string = resourceGroup().location
-
 module vnet 'modules/vnet.bicep' = {
-  name: 'vnetDeployment'
-  params: {
-    location: location
-  }
-}
-
-module peers 'modules/peers.bicep' = {
-  name: 'vnetPeeringDeployment'
-  dependsOn: [vnet]
-  params: {
-    vnet1Id: vnet.outputs.vnet1Id
-    vnet2Id: vnet.outputs.vnet2Id
-  }
-}
-
-// Add VM, Storage, and Monitor modules below
-module vm1 'modules/vm.bicep' = {
-  name: 'vm1Deployment'
-  params: {
-    vnetName: 'vnet1'
-    subnetName: 'infra'
-    vmName: 'vm1'
-  }
-}
-
-module vm2 'modules/vm.bicep' = {
-  name: 'vm2Deployment'
-  params: {
-    vnetName: 'vnet2'
-    subnetName: 'infra'
-    vmName: 'vm2'
-  }
+  name: 'vnetModule'
+  params: {}
 }
 
 module storage1 'modules/storage.bicep' = {
-  name: 'storage1Deployment'
+  name: 'storage1'
   params: {
-    location: location
-    storageAccountName: 'storagevnet1'
+    storageAccountName: 'storagevnet1uni'  // Must be globally unique
+    location: resourceGroup().location
   }
 }
 
 module storage2 'modules/storage.bicep' = {
-  name: 'storage2Deployment'
+  name: 'storage2'
   params: {
-    location: location
-    storageAccountName: 'storagevnet2'
+    storageAccountName: 'storagevnet2uni'  // Must be globally unique
+    location: resourceGroup().location
+  }
+}
+
+module vm1 'modules/vm.bicep' = {
+  name: 'vm1'
+  params: {
+    vmName: 'vm-in-vnet1'
+    subnetId: vnet.outputs.vnet1InfraSubnetId
+  }
+}
+
+module vm2 'modules/vm.bicep' = {
+  name: 'vm2'
+  params: {
+    vmName: 'vm-in-vnet2'
+    subnetId: vnet.outputs.vnet2InfraSubnetId
   }
 }
 
 module monitor 'modules/monitor.bicep' = {
-  name: 'monitorDeployment'
-  params: {
-    location: location
-  }
+  name: 'monitor'
 }
