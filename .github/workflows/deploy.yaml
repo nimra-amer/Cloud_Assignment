@@ -3,25 +3,23 @@ name: Deploy Bicep to Azure
 on:
   push:
     branches:
-      - main  # or the branch you're working on
+      - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy Bicep Template
-        uses: azure/arm-deploy@v1
-        with:
-          subscriptionId: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
-          resourceGroupName: Bicep-Assignment
-          template: ./main.bicep
-          parameters: ''
+    - name: Deploy Bicep
+      uses: azure/cli@v1
+      with:
+        inlineScript: |
+          az deployment group create \
+            --resource-group YOUR_RESOURCE_GROUP \
+            --template-file main.bicep
