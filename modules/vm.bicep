@@ -29,7 +29,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2023-03-01' = {
     osProfile: {
       computerName: vmName
       adminUsername: 'azureuser'
-      adminPassword: 'P@ssw0rd1234!'  
+      adminPassword: 'P@ssw0rd1234!'  // For demo only; use secure params in production
     }
     storageProfile: {
       imageReference: {
